@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MyContacts.WebApi.Infrastructure;
+using MyContacts.WebApi.Models;
 
 namespace MyContacts.WebApi.Controllers
 {
@@ -31,7 +32,7 @@ namespace MyContacts.WebApi.Controllers
         }
 
         //GET http://localhost:33333/api/contacts/1
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}", Name = "GetContact")]
         public IActionResult GetContact(int id)
         {
             var contactDto = DataService.Current.Contacts.FirstOrDefault(x => x.Id == id);
@@ -43,6 +44,24 @@ namespace MyContacts.WebApi.Controllers
             }
 
             return Ok(contactDto);
+        }
+
+        [HttpPost]
+        public IActionResult CreateContact([FromBody] CreateContactDto createContactDto)
+        {
+            var maxId = DataService.Current.Contacts.Max(x => x.Id);
+
+            var contactDto = new ContactDto
+            {
+                Id = maxId + 1,
+                FirstName = createContactDto.FirstName,
+                LastName = createContactDto.LastName,
+                Email = createContactDto.Email
+            };
+
+            DataService.Current.Contacts.Add(contactDto);
+
+            return CreatedAtRoute("GetContact", new { id = contactDto.Id }, contactDto);
         }
     }
 }
