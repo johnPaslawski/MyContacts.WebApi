@@ -58,9 +58,9 @@ namespace MyContacts.WebApi.Controllers
             //ale też możemy recznie sprawdzać poprawność danych i przesłać do usera wiadomość
             if (createContactDto.FirstName == createContactDto.LastName)
             {
-                ModelState.AddModelError(key:"Description", errorMessage:"Imie nie moze byc takie samo jak nazwisko");
+                ModelState.AddModelError(key: "Description", errorMessage: "Imie nie moze byc takie samo jak nazwisko");
             }
-            
+
             //mamy zawsze do dyspozycji właściwość ModelState i możemy ją tutaj zweryfikować-
             // czy stan tego modelu jest odpowiedni (podany błędne dane, zbyt duże itd)
             if (!ModelState.IsValid)
@@ -82,6 +82,30 @@ namespace MyContacts.WebApi.Controllers
 
             //poniższe informacje będą zwrócone w Headers zapytania
             return CreatedAtRoute("GetContact", new { id = contactDto.Id }, contactDto);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateContact(int id, [FromBody] UpdateContactDto updateContactDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var contactDto = DataService.Current.Contacts.FirstOrDefault(x => x.Id == id);
+
+            if (contactDto == null)
+            {
+                return NotFound();
+            }
+
+            contactDto.FirstName = updateContactDto.FirstName;
+            contactDto.LastName = updateContactDto.LastName;
+            contactDto.Email = updateContactDto.Email;
+
+            //coś musimy zwrócić, ale inaczej niż w przypadku dodawania i usuwania tutaj nie zwrócimy nic , tak 
+            //sugeruje konwencja w przypadku put
+            return NoContent();
         }
     }
 }
