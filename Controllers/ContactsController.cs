@@ -107,5 +107,21 @@ namespace MyContacts.WebApi.Controllers
             //sugeruje konwencja w przypadku put
             return NoContent();
         }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteContact(int id)
+        {
+            // najpierw weryfikujemy czy istnieje
+            var contactDto = DataService.Current.Contacts.FirstOrDefault(x => x.Id == id);
+
+            if (contactDto == null)
+            {
+                return NotFound();
+            }
+
+            DataService.Current.Contacts.Remove(contactDto);
+
+            return NoContent();
+        }
     }
 }
