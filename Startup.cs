@@ -27,7 +27,7 @@ namespace MyContacts.WebApi
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             //    // wymusza honorowanie Accept od klienta
             //    (config =>
             //        {

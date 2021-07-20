@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using MyContacts.WebApi.Infrastructure;
 using MyContacts.WebApi.Models;
@@ -55,7 +56,7 @@ namespace MyContacts.WebApi.Controllers
         [HttpPost]
         public IActionResult CreateContact([FromBody] CreateContactDto createContactDto)
         {
-            //ale też możemy recznie sprawdzać poprawność danych i przesłać do usera wiadomość
+            //ale też możemy recznie sprawdzać poprawność jakichś danych i przesłać do usera jakąś wiadomość, np
             if (createContactDto.FirstName == createContactDto.LastName)
             {
                 ModelState.AddModelError(key: "Description", errorMessage: "Imie nie moze byc takie samo jak nazwisko");
@@ -120,6 +121,67 @@ namespace MyContacts.WebApi.Controllers
             }
 
             DataService.Current.Contacts.Remove(contactDto);
+
+            return NoContent();
+        }
+
+        // PATCH api/contacts/1
+        // http://jsonpatch.com/
+        // [
+        // {
+        //     "op": "add",
+        //     "path": "/name",
+        //     "value": "new name"
+        // },
+        // {
+        //     "op": "replace",
+        //     "path": "/description",
+        //     "value": "new description"
+        // }
+        // ]   
+        [HttpPatch("{id}")]
+        public IActionResult PartialUpdateContact(int id, [FromBody] JsonPatchDocument<UpdateContactDto> patchDocument)
+        {
+            var contactDto = DataService.Current.Contacts.FirstOrDefault(x => x.Id == id);
+
+            if (contactDto == null)
+            {
+                return NotFound();
+            }
+
+            //tworzę pomocniczy obiekt żebym miał juz odczetane istniejące dane i sie nie przejmował tymi, których akurat nie chcę zmienić
+            var contactToBePatched = new UpdateContactDto
+            {
+                FirstName = contactDto.FirstName,
+                LastName = contactDto.LastName,
+                Email = contactDto.Email
+            };
+
+            //to jest najważniejsze !!!!
+            patchDocument.ApplyTo(contactToBePatched);
+            
+            //proforma możemy sprawdzić
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            //w tym momencie też możemy recznie sprawdzać poprawność jakichś danych i przesłać do usera jakąś wiadomość, np
+            if (contactToBePatched.FirstName == contactToBePatched.LastName)
+            {
+                ModelState.AddModelError(key: "Description", errorMessage: "Imie nie moze byc takie samo jak nazwisko");
+            }
+
+            //weryfikujemy czy nasza zmienna jest zgodna z definicją i ograniczeniami modelu
+            if (!TryValidateModel(contactToBePatched))
+            {
+                return BadRequest(new ClientErrorData { Title = "czlowieku, coś odjebałeś" });
+            }
+
+            //teraz dokonujemy przypisania:
+            contactDto.FirstName = contactToBePatched.FirstName;
+            contactDto.LastName = contactToBePatched.LastName;
+            contactDto.Email = contactToBePatched.Email;
 
             return NoContent();
         }
