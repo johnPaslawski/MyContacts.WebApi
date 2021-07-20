@@ -13,13 +13,19 @@ namespace MyContacts.WebApi.Controllers
     [Route("api/contacts")]
     public class ContactsController : ControllerBase
     {
-        //GET http://localhost:33333/api/contacts
+        //GET http://localhost:33333/api/contacts?like=ski
         // dekorator zakomentowany, bo api/contacts jest już w 12 linijce do całego kontrolera
         //[HttpGet("api/contacts")]
         [HttpGet]
-        public IActionResult GetContacts()
+        public IActionResult GetContacts([FromQuery] string like)
         {
-            var contactsDto = DataService.Current.Contacts;
+            var contactsDto = DataService.Current.Contacts.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(like))
+            {
+                contactsDto = contactsDto.Where(x => x.Name.Contains(like));
+            }
+
             return Ok(contactsDto);
 
             //return new JsonResult(
