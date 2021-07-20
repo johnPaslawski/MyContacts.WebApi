@@ -160,11 +160,6 @@ namespace MyContacts.WebApi.Controllers
             //to jest najważniejsze !!!!
             patchDocument.ApplyTo(contactToBePatched);
             
-            //proforma możemy sprawdzić
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
 
             //w tym momencie też możemy recznie sprawdzać poprawność jakichś danych i przesłać do usera jakąś wiadomość, np
             if (contactToBePatched.FirstName == contactToBePatched.LastName)
@@ -175,13 +170,14 @@ namespace MyContacts.WebApi.Controllers
             //weryfikujemy czy nasza zmienna jest zgodna z definicją i ograniczeniami modelu
             if (!TryValidateModel(contactToBePatched))
             {
-                return BadRequest(new ClientErrorData { Title = "czlowieku, coś odjebałeś" });
+                return BadRequest(ModelState);
             }
 
             //teraz dokonujemy przypisania:
             contactDto.FirstName = contactToBePatched.FirstName;
             contactDto.LastName = contactToBePatched.LastName;
             contactDto.Email = contactToBePatched.Email;
+
 
             return NoContent();
         }
