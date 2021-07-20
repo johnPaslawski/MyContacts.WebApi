@@ -55,6 +55,19 @@ namespace MyContacts.WebApi.Controllers
         [HttpPost]
         public IActionResult CreateContact([FromBody] CreateContactDto createContactDto)
         {
+            //ale też możemy recznie sprawdzać poprawność danych i przesłać do usera wiadomość
+            if (createContactDto.FirstName == createContactDto.LastName)
+            {
+                ModelState.AddModelError(key:"Description", errorMessage:"Imie nie moze byc takie samo jak nazwisko");
+            }
+            
+            //mamy zawsze do dyspozycji właściwość ModelState i możemy ją tutaj zweryfikować-
+            // czy stan tego modelu jest odpowiedni (podany błędne dane, zbyt duże itd)
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var maxId = DataService.Current.Contacts.Max(x => x.Id);
 
             var contactDto = new ContactDto
@@ -67,6 +80,7 @@ namespace MyContacts.WebApi.Controllers
 
             DataService.Current.Contacts.Add(contactDto);
 
+            //poniższe informacje będą zwrócone w Headers zapytania
             return CreatedAtRoute("GetContact", new { id = contactDto.Id }, contactDto);
         }
     }
