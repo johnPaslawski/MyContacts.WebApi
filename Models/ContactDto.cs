@@ -12,5 +12,6 @@ namespace MyContacts.WebApi.Models
         public string LastName { get; set; }
         public string Name => $"{FirstName} {LastName}";
         public string Email { get; set; }
+        public ICollection<PhoneDto> Phones { get; set; } = new List<PhoneDto>();
     }
 }

@@ -10,8 +10,12 @@ using MyContacts.WebApi.Models;
 namespace MyContacts.WebApi.Controllers
 {
     [ApiController]
-    // do czego ten kontroler się odnosi tutaj umieszczamy, ale można też nad metodami, kwestia przejrzystości kodu
-    [Route("api/contacts")]
+    // do czego ten kontroler się odnosi - tutaj umieszczamy, ale można też nad metodami, kwestia przejrzystości kodu
+    //tutaj posłużymy się rekomendowanym przez microsoft automatycznym tworzeniem nazwy Routa, bo co prawda
+    //moglibyśmy tak:
+    //[Route("api/contacts")]
+    //ale zrobimy tak, że automatycznie weźnie jako routa część nazwy tego controllera:
+    [Route("api/[controller]")]
     public class ContactsController : ControllerBase
     {
         //GET http://localhost:33333/api/contacts?like=ski

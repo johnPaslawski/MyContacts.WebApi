@@ -20,6 +20,21 @@ namespace MyContacts.WebApi.Infrastructure
                     FirstName = "Jan",
                     LastName = "Kowalski",
                     Email = "jkowalski@gmail.com",
+                    Phones = new List<PhoneDto>()
+                    {
+                        new PhoneDto
+                        {
+                            Id = 1,
+                            Number = "111-111-111",
+                            Description = "domowy"
+                        },
+                        new PhoneDto
+                        {
+                            Id = 2,
+                            Number = "222-222-222",
+                            Description = "praca"
+                        }
+                    }
                 },
                 new ContactDto
                 {
