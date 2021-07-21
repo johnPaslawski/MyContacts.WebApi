@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using MyContacts.WebApi.Infrastructure;
 using MyContacts.WebApi.Models;
 using System;
@@ -97,7 +98,29 @@ namespace MyContacts.WebApi.Controllers
             return NoContent();
         }
 
-        //[HttpPatch]
+        [HttpPatch("{id}")]
+        public IActionResult PartialUpdatePhone(int contactId, int id, 
+                                                [FromBody] JsonPatchDocument<UpdatePhoneDto> patchDocument)
+        {
+            var contactDtoPhone = DataService.Current.Contacts
+                .FirstOrDefault(x => x.Id == contactId)
+                .Phones
+                .FirstOrDefault(x => x.Id == id);
+
+            var numberToBePatched = new UpdatePhoneDto
+            {
+                Number = contactDtoPhone.Number,
+                Description = contactDtoPhone.Description
+            };
+
+            patchDocument.ApplyTo(numberToBePatched);
+
+            contactDtoPhone.Number = numberToBePatched.Number;
+            contactDtoPhone.Description = numberToBePatched.Description;
+
+            return NoContent();
+
+        }
 
     }
 }
