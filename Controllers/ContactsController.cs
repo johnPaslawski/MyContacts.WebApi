@@ -167,6 +167,11 @@ namespace MyContacts.WebApi.Controllers
                 ModelState.AddModelError(key: "Description", errorMessage: "Imie nie moze byc takie samo jak nazwisko");
             }
 
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             //weryfikujemy czy nasza zmienna jest zgodna z definicją i ograniczeniami modelu
             if (!TryValidateModel(contactToBePatched))
             {
