@@ -67,9 +67,36 @@ namespace MyContacts.WebApi.Controllers
             return CreatedAtRoute("GetPhone", new { contactId = contactId, id = phoneDto.Id }, phoneDto);
         }
 
+        [HttpPut("{id}")]
+        public IActionResult UpdatePhone(int contactId, int id, [FromBody] UpdatePhoneDto updatePhoneDto)
+        {
+            var contactDtoPhone = DataService.Current.Contacts
+                .FirstOrDefault(x => x.Id == contactId)
+                .Phones
+                .FirstOrDefault(x => x.Id == id);
 
-        //[HttpPut]
-        //[HttpDelete]
+            contactDtoPhone.Number = updatePhoneDto.Number;
+            contactDtoPhone.Description = updatePhoneDto.Description;
+
+            return NoContent();
+        }
+        
+        [HttpDelete("{id}")]
+        public IActionResult DeletePhone(int contactId, int id)
+        {
+            var contactDtoPhone = DataService.Current.Contacts
+                .FirstOrDefault(x => x.Id == contactId)
+                .Phones
+                .FirstOrDefault(x => x.Id == id);
+
+            DataService.Current.Contacts
+                .FirstOrDefault(x => x.Id == contactId)
+                .Phones
+                .Remove(contactDtoPhone);
+
+            return NoContent();
+        }
+
         //[HttpPatch]
 
     }
