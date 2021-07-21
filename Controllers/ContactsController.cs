@@ -85,7 +85,7 @@ namespace MyContacts.WebApi.Controllers
 
             DataService.Current.Contacts.Add(contactDto);
 
-            //poniższe informacje będą zwrócone w Headers zapytania
+            //poniższe informacje będą zwrócone w Body(ostatni argument) i Headers zapytania
             return CreatedAtRoute("GetContact", new { id = contactDto.Id }, contactDto);
         }
 
