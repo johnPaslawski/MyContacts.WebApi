@@ -16,13 +16,16 @@ namespace MyContacts.WebApi.Models
         [MinLength(2)]
         [MaxLength(32)]
         public string FirstName { get; set; }
+
         [Required]
         [MinLength(2)]
         [MaxLength(64)]
         public string LastName { get; set; }
+
         [Required]
         [MinLength(2)]
         [MaxLength(32)]
+        //[DataType(DataType.EmailAddress)] this is not validation, but only presentation       
         [EmailAddress]
         public string Email { get; set; }
     }
